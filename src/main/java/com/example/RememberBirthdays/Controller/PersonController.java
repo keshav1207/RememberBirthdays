@@ -31,7 +31,7 @@ public class PersonController {
     }
 
 
-    @PutMapping("/{id")
+    @PutMapping("/{id}")
     public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson){
         return repository.findById(id)
                 .map(person -> {
