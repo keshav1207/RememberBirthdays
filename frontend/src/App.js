@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useState } from "react";
 
-function App() {
+export default function App() {
+  const [formValues, setFormValues] = useState({
+    firstName: "",
+    lastName: "",
+    date: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  function recordBirthday(e) {
+    e.preventDefault();
+    console.log("AAA");
+    console.log(formValues);
+    setFormValues({
+      firstName: "",
+      lastName: "",
+      date: "",
+    });
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <form onSubmit={recordBirthday}>
+        <h1> Birthday </h1>
+        <label>First Name: </label>
+        <input
+          name="firstName"
+          type="text"
+          value={formValues.firstName}
+          onChange={handleChange}
+        />
+
+        <label>Last Name: </label>
+        <input
+          name="lastName"
+          type="text"
+          value={formValues.lastName}
+          onChange={handleChange}
+        />
+
+        <input
+          name="date"
+          type="date"
+          value={formValues.date}
+          onChange={handleChange}
+        />
+
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 }
-
-export default App;
