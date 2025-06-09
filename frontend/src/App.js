@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-
+import axios from "axios";
 export default function App() {
   const [formValues, setFormValues] = useState({
     firstName: "",
@@ -16,15 +16,26 @@ export default function App() {
     });
   };
 
-  function recordBirthday(e) {
-    e.preventDefault();
-    console.log("AAA");
-    console.log(formValues);
-    setFormValues({
-      firstName: "",
-      lastName: "",
-      date: "",
-    });
+  async function recordBirthday(e) {
+    try {
+      e.preventDefault();
+
+      setFormValues({
+        firstName: "",
+        lastName: "",
+        date: "",
+      });
+
+      const response = await axios.post("http://localhost:8080/api/people", {
+        firstName: formValues.firstName,
+        lastName: formValues.lastName,
+        date: formValues.date,
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
