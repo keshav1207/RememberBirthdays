@@ -3,6 +3,7 @@ package com.example.RememberBirthdays.Controller;
 
 import com.example.RememberBirthdays.Model.Person;
 import com.example.RememberBirthdays.Repository.PersonRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class PersonController {
     private PersonRepository repository;
 
     @PostMapping
-    public Person addPerson(@RequestBody Person person) {
+    public Person addPerson(@RequestBody @Valid  Person person) {
 
         return repository.save(person);
     }
@@ -35,7 +36,7 @@ public class PersonController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson){
+    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid  Person updatedPerson){
         return repository.findById(id)
                 .map(person -> {
                     person.setFirstName(updatedPerson.getFirstName());
