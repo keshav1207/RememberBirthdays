@@ -28,6 +28,9 @@ public class Person{
     @Past(message = "Birth date must be in the past")
     private LocalDate birthDate;
 
+
+    private String userId;
+
     public Long getId() {
         return id;
     }
@@ -43,6 +46,12 @@ public class Person{
     public LocalDate getBirthDate(){
         return this.birthDate;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserID(String userId) {this.userId = userId;}
 
     public void setFirstName(String firstname){
         this.firstName = firstname;
