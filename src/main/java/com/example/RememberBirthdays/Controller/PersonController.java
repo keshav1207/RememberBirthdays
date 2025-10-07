@@ -36,8 +36,22 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable Long id){
-        repository.deleteById(id);
+    public ResponseEntity<?> deletePerson(@PathVariable Long id){
+        String userId = SecurityUtils.getCurrentUserId();
+
+        return repository.findById(id)
+                .map(person -> {
+                    if(!person.getUserId().equals(userId)){
+                        return ResponseEntity.status(403).body("Authorization required to delete this birthday");
+                    }
+
+                    repository.delete(person);
+                    return ResponseEntity.ok().build();
+
+                })
+                .orElse(ResponseEntity.notFound().build());
+
+
     }
 
 
