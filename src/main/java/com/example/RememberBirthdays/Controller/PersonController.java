@@ -56,9 +56,16 @@ public class PersonController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody @Valid  Person updatedPerson){
+    public ResponseEntity<?> updatePerson(@PathVariable Long id, @RequestBody @Valid  Person updatedPerson){
+        String userId = SecurityUtils.getCurrentUserId();
+
         return repository.findById(id)
                 .map(person -> {
+
+                    if(!person.getUserId().equals(userId)){
+                        return ResponseEntity.status(403).body("Authorization required to edit this birthday");
+                    }
+
                     person.setFirstName(updatedPerson.getFirstName());
                     person.setLastName(updatedPerson.getLastName());
                     person.setBirthDate(updatedPerson.getBirthDate());
