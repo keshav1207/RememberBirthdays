@@ -1,11 +1,12 @@
 package com.example.RememberBirthdays.Controller;
-
 import com.example.RememberBirthdays.Model.Person;
+import com.example.RememberBirthdays.Model.User;
 import com.example.RememberBirthdays.Repository.PersonRepository;
-import com.example.RememberBirthdays.Utils.SecurityUtils;
+import com.example.RememberBirthdays.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.List;
@@ -14,34 +15,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/people")
 public class PersonController {
+
     @Autowired
     private PersonRepository repository;
+    @Autowired
+    private UserService userservice;
 
     @PostMapping
-    public Person addPerson(@RequestBody @Valid  Person person) {
-        // Step 1: Get user ID from JWT
-        String userId = SecurityUtils.getCurrentUserId();
+    public Person addPerson(@RequestBody @Valid  Person person, @org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt) {
+        User user = userservice.findOrCreateUser(jwt);
+        person.setUser(user);
 
-        // Step 2: Attach user ID to the person
-        person.setUserID(userId);
-
-        // Step 3: Save to DB
         return repository.save(person);
+
     }
 
     @GetMapping
-    public List<Person> getAllPersons(){
-        String userId = SecurityUtils.getCurrentUserId();
-        return repository.findAllByUserId(userId);
+    public List<Person> getAllPersons(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt){
+        User user = userservice.findOrCreateUser(jwt);
+        return repository.findAllByUser(user);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePerson(@PathVariable Long id){
-        String userId = SecurityUtils.getCurrentUserId();
+    public ResponseEntity<?> deletePerson(@PathVariable Long id, @org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt){
+        User user  = userservice.findOrCreateUser(jwt);
 
         return repository.findById(id)
                 .map(person -> {
-                    if(!person.getUserId().equals(userId)){
+                    if(!person.getUser().getUserId().equals(user.getUserId())){
                         return ResponseEntity.status(403).body("Authorization required to delete this birthday");
                     }
 
@@ -56,13 +57,13 @@ public class PersonController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePerson(@PathVariable Long id, @RequestBody @Valid  Person updatedPerson){
-        String userId = SecurityUtils.getCurrentUserId();
+    public ResponseEntity<?> updatePerson(@PathVariable Long id, @RequestBody @Valid  Person updatedPerson, @org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt){
+        User user = userservice.findOrCreateUser(jwt);
 
         return repository.findById(id)
                 .map(person -> {
 
-                    if(!person.getUserId().equals(userId)){
+                    if(!person.getUser().getUserId().equals(user.getUserId())){
                         return ResponseEntity.status(403).body("Authorization required to edit this birthday");
                     }
 
