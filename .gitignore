@@ -35,3 +35,4 @@ build/
 
 application.properties
 /application-secrets.properties
+src/main/resources/application.properties
