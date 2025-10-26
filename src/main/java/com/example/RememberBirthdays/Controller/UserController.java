@@ -1,4 +1,5 @@
 package com.example.RememberBirthdays.Controller;
+import com.example.RememberBirthdays.DTO.CreateUserRequest;
 import com.example.RememberBirthdays.Model.User;
 import com.example.RememberBirthdays.Repository.UserRepository;
 import com.example.RememberBirthdays.Service.KeycloakAdminService;
@@ -23,7 +24,7 @@ public class UserController {
     @Autowired
     private KeycloakAdminService keycloakAdminService;
 
-    @GetMapping({"/id"})
+    @GetMapping("/{userId}")
     public ResponseEntity<User> getUser(@PathVariable  String userId){
         return userRepository.findByUserId(userId)
                 .map(ResponseEntity::ok)
@@ -32,20 +33,25 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody @Valid User user, String password){
+    public ResponseEntity<User> addUser(@RequestBody @Valid CreateUserRequest request){
         String keycloakUserId = keycloakAdminService.createUserInkeycloak(
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                password
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEmail(),
+                request.getPassword()
         );
 
+        User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
         user.setUserId(keycloakUserId);
+
         User savedUser = userRepository.save(user);
         return  ResponseEntity.ok(savedUser);
     }
 
-    @PutMapping({"{/userId}"})
+    @PutMapping("/{userId}")
     public ResponseEntity<User> editUser(@PathVariable String userId, @RequestBody @Valid User updatedUser){
         return userRepository.findByUserId(userId)
                 .map(existingUser -> {
@@ -58,7 +64,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
 
     }
-    @DeleteMapping({"/id"})
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable String userId){
 
         if (userRepository.existsById(userId)){
