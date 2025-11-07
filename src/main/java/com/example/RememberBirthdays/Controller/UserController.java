@@ -34,7 +34,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid CreateUserRequest request){
-        String keycloakUserId = keycloakAdminService.createUserInkeycloak(
+        String keycloakUserId = keycloakAdminService.createUserInKeycloak(
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
@@ -53,12 +53,18 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public ResponseEntity<User> editUser(@PathVariable String userId, @RequestBody @Valid User updatedUser){
+        String newFirstName = updatedUser.getFirstName();
+        String newLastName = updatedUser.getLastName();
+        String newEmail = updatedUser.getEmail();
         return userRepository.findByUserId(userId)
                 .map(existingUser -> {
-                    existingUser.setFirstName(updatedUser.getFirstName());
-                    existingUser.setLastName(updatedUser.getLastName());
-                    existingUser.setEmail(updatedUser.getEmail());
+
+                    existingUser.setFirstName(newFirstName);
+                    existingUser.setLastName(newLastName);
+                    keycloakAdminService.updateUserInKeycloak(userId,newFirstName,newLastName,newEmail);
+                    existingUser.setEmail(newEmail);
                     User savedUser = userRepository.save(existingUser);
+
                     return ResponseEntity.ok(savedUser);
                 })
                 .orElse(ResponseEntity.notFound().build());

@@ -5,6 +5,10 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import jakarta.ws.rs.NotFoundException;
+
 
 import java.util.List;
 
@@ -12,6 +16,7 @@ import java.util.List;
 @Service
 public class KeycloakAdminService {
     private final Keycloak keycloak;
+    private static final Logger log = LoggerFactory.getLogger(KeycloakAdminService.class);
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -20,7 +25,7 @@ public class KeycloakAdminService {
         this.keycloak = keycloak;
     }
 
-    public String createUserInkeycloak(String firstName, String lastName, String email, String password ){
+    public String createUserInKeycloak(String firstName, String lastName, String email, String password ){
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
         user.setFirstName(firstName);
@@ -47,8 +52,19 @@ public class KeycloakAdminService {
     }
 
     public void deleteUserFromKeycloak(String keycloakUserId) {
-        keycloak.realm(realm).users().get(keycloakUserId).remove();
+        try {
+            keycloak.realm(realm).users().get(keycloakUserId).remove();
+            log.info("Deleted user {} from Keycloak", keycloakUserId);
+        } catch (NotFoundException e) {
+            // Keycloak returns 404 if user not found — this is not fatal
+            log.warn("User {} not found in Keycloak. Skipping delete.", keycloakUserId);
+        } catch (Exception e) {
+            // Catch unexpected errors to prevent 500s with no message
+            log.error("Unexpected error deleting user {} from Keycloak", keycloakUserId, e);
+            throw new RuntimeException("Failed to delete user from Keycloak", e);
+        }
     }
+
 
     public void updateUserInKeycloak(String keycloakUserId, String firstName, String lastName, String email) {
         UserRepresentation user = keycloak.realm(realm).users().get(keycloakUserId).toRepresentation();
@@ -56,7 +72,6 @@ public class KeycloakAdminService {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
-        user.setUsername(email);
 
         keycloak.realm(realm).users().get(keycloakUserId).update(user);
     }
