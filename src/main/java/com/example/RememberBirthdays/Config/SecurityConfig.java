@@ -16,7 +16,12 @@ import java.util.List;
 public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http.authorizeHttpRequests(auth -> auth
+                http
+                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/user") // disable CSRF for this endpoint
+                )
+                .authorizeHttpRequests(auth -> auth
+                                    .requestMatchers("/api/user").permitAll()
                     .anyRequest().authenticated()
                     )
                     .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())
