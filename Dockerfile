@@ -2,12 +2,15 @@
 FROM eclipse-temurin:24 AS build
 WORKDIR /app
 
-# Ensure Maven wrapper can run
-RUN chmod +x mvnw
 
 # Copy Maven wrapper so we can build without installing Maven globally
 COPY mvnw .
 COPY .mvn .mvn
+
+
+# Ensure Maven wrapper can run
+RUN chmod +x mvnw
+
 
 COPY pom.xml .
 RUN ./mvnw dependency:go-offline || true
