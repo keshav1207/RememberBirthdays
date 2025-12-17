@@ -1,4 +1,4 @@
-
+# LOCAL DEVELOPMENT ONLY – NOT USED IN PRODUCTION
 services:
   postgres:
     image: postgres:15
