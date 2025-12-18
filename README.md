@@ -2,6 +2,19 @@
 
 A fullstack Spring Boot application to help users remember and manage birthdays, featuring secure authentication, email reminders, and a modern frontend. Built to showcase strong backend engineering, security, and DevOps skills.
 
+## Table of Contents
+
+- [Features](#features)
+- [Architecture](#architecture)
+- [API Overview](#api-overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Local Development](#local-development)
+  - [Running Tests](#running-tests)
+- [Project Structure](#project-structure)
+- [Why This Project Stands Out](#why-this-project-stands-out)
+- [Author](#author)
+
 ## Features
 
 - **User Authentication & Authorization:**
