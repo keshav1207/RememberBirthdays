@@ -11,8 +11,10 @@
   - [Prerequisites](#prerequisites)
   - [Local Development](#local-development)
   - [Running Tests](#running-tests)
+- [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
 - [Why This Project Stands Out](#why-this-project-stands-out)
+- [Email Sending and Deployment](#email-sending-and-deployment)
 - [Author](#author)
 
 ## Features
@@ -127,6 +129,27 @@ SENDGRID_FROM_EMAIL=your_verified_sender@email.com
 - **Clean, maintainable code with layered architecture**
 - **Production-ready Docker setup**
 - **Full CRUD and admin features**
+
+## Email Sending and Deployment
+
+This project includes **automated birthday email reminders**.
+
+> **Note:** Outbound SMTP is blocked on Railway. Email reminders are sent using a transactional email API (e.g., SendGrid) via HTTPS.
+
+### Important Limitations
+
+- The deployed version on Railway uses a free tier of the email service (e.g., SendGrid, Mailgun, or Brevo).
+- Once the free trial or quota expires, the deployed app may **no longer send email reminders**.
+- All other features (adding birthdays, user authentication, etc.) will continue to work.
+
+### How to Test Email Reminders
+
+You can fully test the email functionality by:
+
+1. **Running the backend locally** with your own email service configuration.
+2. **Signing up for a free transactional email API key** (no paid subscription required) and configuring it in your environment variables.
+
+This ensures the app demonstrates backend email integration, even if the deployed version temporarily stops sending reminders due to quota limits.
 
 ## Author
 
