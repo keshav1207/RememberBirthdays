@@ -1,5 +1,6 @@
 package com.example.RememberBirthdays.Config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,11 @@ import java.util.*;
 
 @Configuration
 public class SecurityConfig {
+
+        @Value("${frontend.url}")
+        private String frontendUrl;
+
+
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
@@ -53,7 +59,7 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfiguration(){
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000/"));
+                configuration.setAllowedOrigins(List.of(frontendUrl));
                 configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT","DELETE"));
                 configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
                 configuration.setAllowCredentials((true));
