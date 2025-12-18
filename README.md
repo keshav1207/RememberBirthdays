@@ -37,6 +37,8 @@
 
 ## Architecture
 
+![Architecture Diagram](images/Architectural%20Diagram%20-%20RememberBirthdays.png)
+
 - **Backend:** Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security, Keycloak, PostgreSQL, Docker
 - **DevOps:** Docker, Docker Compose
 
@@ -138,7 +140,7 @@ This project includes **automated birthday email reminders**.
 
 ### Important Limitations
 
-- The deployed version on Railway uses a free tier of the  SendGrid email service.
+- The deployed version on Railway uses a free tier of the SendGrid email service.
 - Once the free trial or quota expires, the deployed app may **no longer send email reminders**.
 - All other features (adding birthdays, user authentication, etc.) will continue to work.
 
