@@ -20,7 +20,7 @@ public class Person{
     private String lastName;
 
     @NotNull(message = "Birth date is required")
-    @Past(message = "Birth date must be in the past")
+    @PastOrPresent(message = "Birth date must be today or in the past")
     private LocalDate birthDate;
 
     // Defines a many-to-one relationship where many Person records link to one User;
