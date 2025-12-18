@@ -138,7 +138,7 @@ This project includes **automated birthday email reminders**.
 
 ### Important Limitations
 
-- The deployed version on Railway uses a free tier of the email service (e.g., SendGrid, Mailgun, or Brevo).
+- The deployed version on Railway uses a free tier of the  SendGrid email service.
 - Once the free trial or quota expires, the deployed app may **no longer send email reminders**.
 - All other features (adding birthdays, user authentication, etc.) will continue to work.
 
