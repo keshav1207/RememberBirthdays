@@ -26,7 +26,7 @@
   - Add, update, and delete birthdays for people you want to remember.
   - Each user manages their own list; admins can view all users and birthdays.
 - **Automated Email Reminders:**
-  - Sends daily email reminders for birthdays using Spring Boot Mail.
+  - Sends daily email reminders for birthdays using SendGrid API.
 - **RESTful API:**
   - Well-structured endpoints for user and birthday management.
 - **Frontend Ready:**
