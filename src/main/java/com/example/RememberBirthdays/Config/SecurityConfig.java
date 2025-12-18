@@ -63,13 +63,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl)); // Dynamic frontend URL
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS")); // Include OPTIONS
+        configuration.setAllowedOriginPatterns(
+                List.of("https://rememberbirthdaysfrontend.netlify.app", "http://localhost:3000")
+        );
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Apply globally
+        source.registerCorsConfiguration("/**", configuration); // apply to all endpoints
         return source;
     }
 }
