@@ -40,6 +40,8 @@
 
 ![Architecture Diagram](images/Architectural%20Diagram%20-%20RememberBirthdays.png)
 
+### Backend & DevOps Tech Stack
+
 - **Backend:** Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security, Keycloak, PostgreSQL, Docker
 - **DevOps:** Docker, Docker Compose
 
