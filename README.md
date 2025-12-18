@@ -29,8 +29,6 @@
   - Sends daily email reminders for birthdays using SendGrid API.
 - **RESTful API:**
   - Well-structured endpoints for user and birthday management.
-- **Frontend Ready:**
-  - Designed to work with a React frontend (see `static/`).
 - **Dockerized & Cloud-Ready:**
   - Includes Dockerfile and docker-compose for easy local development and deployment.
 - **PostgreSQL Database:**
