@@ -68,6 +68,12 @@
    ```
 2. **Configure environment variables:**
    - Copy `.env.example` to `.env` and fill in values for PostgreSQL and Keycloak.
+   - **Email:**
+     - Sign up for [SendGrid](https://sendgrid.com/), create an API key, and add these to your environment:
+       - `SENDGRID_API_KEY=your_sendgrid_api_key`
+       - `SENDGRID_FROM_EMAIL=your_verified_sender@email.com`
+     - On Railway, add these in the environment variables section.
+     - You must verify your sender email in SendGrid before sending.
 3. **Start services:**
    ```sh
    docker-compose up --build
@@ -82,6 +88,23 @@
 ```sh
 ./mvnw test
 ```
+
+## Environment Variables
+
+```
+# Example
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=youruser
+DB_PASS=yourpassword
+DB_NAME=remember_birthdays
+
+# SendGrid Email API
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_FROM_EMAIL=your_verified_sender@email.com
+```
+
+---
 
 ## Project Structure
 
@@ -107,6 +130,6 @@
 
 ## Author
 
-- Keshav Callychurn   [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" width="20" alt="LinkedIn"/>](https://www.linkedin.com/in/keshav0799)
+- Keshav Callychurn [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" width="20" alt="LinkedIn"/>](https://www.linkedin.com/in/keshav0799)
 
 ---

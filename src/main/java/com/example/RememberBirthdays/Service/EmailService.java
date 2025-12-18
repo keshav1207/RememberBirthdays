@@ -1,21 +1,24 @@
+
 package com.example.RememberBirthdays.Service;
+
 import com.example.RememberBirthdays.Model.Person;
 import com.example.RememberBirthdays.Model.User;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import com.sendgrid.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${SENDGRID_API_KEY}")
+    private String sendGridApiKey;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    @Value("${SENDGRID_FROM_EMAIL}")
+    private String fromEmail;
 
     public void sendBirthdayReminder(User user, List<Person> persons) {
         String subject = "🎉 Birthday Reminder";
@@ -26,12 +29,23 @@ public class EmailService {
                 "Today is the birthday of " + names + " 🎂.\n" +
                 "Don't forget to send your wishes!";
 
+        Email from = new Email(fromEmail);
+        Email to = new Email(user.getEmail());
+        Content content = new Content("text/plain", text);
+        Mail mail = new Mail(from, subject, to, content);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(user.getEmail());
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
+        SendGrid sg = new SendGrid(sendGridApiKey);
+        Request request = new Request();
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+           
+        } catch (IOException ex) {
+           
+            ex.printStackTrace();
+        }
     }
 }
 
