@@ -4,13 +4,12 @@ import com.example.RememberBirthdays.Model.User;
 import com.example.RememberBirthdays.Repository.PersonRepository;
 import com.example.RememberBirthdays.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@CrossOrigin(origins = "${frontend.url}")
+
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {

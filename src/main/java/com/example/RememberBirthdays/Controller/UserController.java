@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 
-@CrossOrigin(origins = "${frontend.url}")
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
