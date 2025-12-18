@@ -21,7 +21,7 @@ public class BirthdayReminderService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 0 8 * * *") // every day at 8 AM server time
+    @Scheduled(cron = "0 * * * * *") // every minute (for testing)
     public void checkAndSendReminders() {
         LocalDate today = LocalDate.now();
         List<Person> todaysBirthdays = personRepository.findByBirthdayMonthAndDay(
