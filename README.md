@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [Features](#features)
+- [Tech Stack](#TechStack)
 - [Architecture](#architecture)
 - [API Overview](#api-overview)
 - [Getting Started](#getting-started)
