@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,12 +26,13 @@ public class BirthdayReminderService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 * * * * *") // every minute (for testing)
+    @Scheduled(cron = "0 * * * * *") // every minute for testing
     public void checkAndSendReminders() {
 
-        List<Person> todaysBirthdays = personRepository.findTodayBirthdays();
+        LocalDate today = LocalDate.now(); // Use Java date to avoid timezone issues
+        List<Person> todaysBirthdays = personRepository.findBirthdaysByDate(today);
 
-        log.info("Birthday reminder job ran — found {} birthdays today", todaysBirthdays.size());
+        log.info("Birthday reminder job ran — found {} birthdays for {}", todaysBirthdays.size(), today);
 
         if (todaysBirthdays.isEmpty()) {
             log.info("No birthdays today — skipping email sending");
