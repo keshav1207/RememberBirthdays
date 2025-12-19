@@ -26,7 +26,7 @@ public class BirthdayReminderService {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "0 * * * * *") // every minute for testing
+    @Scheduled(cron = "0 0 11 * * *") //Runs at 11 UTC time -  6 am Toronto time eveyday
     public void checkAndSendReminders() {
 
         LocalDate today = LocalDate.now(); // Use Java date to avoid timezone issues
