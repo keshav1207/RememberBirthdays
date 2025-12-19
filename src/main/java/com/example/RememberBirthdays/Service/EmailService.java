@@ -22,11 +22,11 @@ public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
 
-    @Value("${sendgrid.api-key}")
+    @Value("${sendgrid.api.key}")
     private String sendGridApiKey;
 
 
-    @Value("${sendgrid.from-email}")
+    @Value("${sendgrid.from.email}")
     private String fromEmail;
 
     // Runs once at startup to verify config
