@@ -12,7 +12,6 @@
   - [Prerequisites](#prerequisites)
   - [Local Development](#local-development)
   - [Running Tests](#running-tests)
-- [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
 - [Why This Project Stands Out](#why-this-project-stands-out)
 - [Email Sending and Deployment](#email-sending-and-deployment)
@@ -93,23 +92,6 @@
 ```sh
 ./mvnw test
 ```
-
-## Environment Variables
-
-```
-# Example
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=youruser
-DB_PASS=yourpassword
-DB_NAME=remember_birthdays
-
-# SendGrid Email API
-SENDGRID_API_KEY=your_sendgrid_api_key
-SENDGRID_FROM_EMAIL=your_verified_sender@email.com
-```
-
----
 
 ## Project Structure
 
