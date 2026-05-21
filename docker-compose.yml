@@ -1,0 +1,102 @@
+  # -------------------
+  #  This is used only for deployment on AWS, Not for local use
+  # -------------------
+
+
+version: "3.9"
+
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+
+  # -------------------
+  # KEYCLOAK
+  # -------------------
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.6
+    container_name: keycloak
+    command: start-dev
+
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://${RDS_HOST}:5432/${KC_DB_NAME}
+      KC_DB_USERNAME: ${RDS_USERNAME}
+      KC_DB_PASSWORD: ${RDS_PASSWORD}
+
+      KC_HOSTNAME: ${EC2_PUBLIC_IP}
+      KC_HOSTNAME_PORT: 8081
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+
+      KC_LOG_LEVEL: INFO
+      
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    ports:
+      - "8081:8080"
+
+    networks:
+      - app-network
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+
+  # -------------------
+  # BACKEND
+  # -------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: backend
+
+    environment:
+
+      # DB
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
+      # KEYCLOAK ADMIN CLIENT (IMPORTANT - FIX FOR YOUR ERROR)
+      keycloak.serverUrl: ${KEYCLOAK_SERVERURL}
+      keycloak.realm: ${KEYCLOAK_REALM}
+      keycloak.adminClientId: ${KEYCLOAK_ADMINCLIENTID}
+      keycloak.adminClientSecret: ${KEYCLOAK_ADMINCLIENTSECRET}
+
+      # JWT
+      ISSUER_URI: ${ISSUER_URI}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+
+      # JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL}
+
+      # OPTIONAL
+      FRONTEND_URL: ${FRONTEND_URL}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - keycloak
+
+    networks:
+      - app-network
+
+    restart: unless-stopped
