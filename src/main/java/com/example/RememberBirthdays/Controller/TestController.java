@@ -1,11 +1,12 @@
+package com.example.RememberBirthdays.Controller;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
-
 
 @RestController
 public class TestController {
 
-    @GetMapping("/public/hello")
+    @GetMapping("/test/hello")
     public String publicHello() {
         return "Public endpoint";
     }
