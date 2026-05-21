@@ -35,6 +35,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("Admin")
                         // Public endpoints
                         .requestMatchers("/api/user").permitAll()
+                        // Testing endpoints
+                         .requestMatchers("/public/**").permitAll() 
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
