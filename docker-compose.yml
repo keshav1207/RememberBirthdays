@@ -29,8 +29,8 @@ services:
       KC_DB_USERNAME: ${RDS_USERNAME}
       KC_DB_PASSWORD: ${RDS_PASSWORD}
 
-      KC_HOSTNAME: ${EC2_PUBLIC_IP}
-      KC_HOSTNAME_PORT: 8081
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HOSTNAME_PORT: 443
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
 
@@ -38,7 +38,8 @@ services:
       
       KC_HOSTNAME_STRICT_HTTPS: "false"
     ports:
-      - "8081:8080"
+
+      - "80:8080"
 
     networks:
       - app-network
