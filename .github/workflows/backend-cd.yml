@@ -43,5 +43,6 @@ jobs:
             docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
             docker tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest rememberbirthdays-backend:latest
             cd /home/ubuntu/RememberBirthdays
+            git pull
             docker compose down
             docker compose up -d
