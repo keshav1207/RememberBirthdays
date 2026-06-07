@@ -10,6 +10,9 @@ networks:
   app-network:
     driver: bridge
 
+volumes:
+  grafana-data:
+
 services:
 
   # -------------------
@@ -126,6 +129,8 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
       - app-network
     restart: unless-stopped
@@ -141,3 +146,5 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
+
