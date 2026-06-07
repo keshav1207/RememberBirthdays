@@ -37,5 +37,5 @@ module "cdn" {
   source           = "./modules/cdn"
   project_name     = var.project_name
   s3_bucket_domain = "rememberbithdays-frontend.s3.ca-central-1.amazonaws.com"
-  ec2_domain       = "ec2-3-99-225-134.ca-central-1.compute.amazonaws.com"
+  ec2_domain       =  "ec2-35-182-20-4.ca-central-1.compute.amazonaws.com"
 }

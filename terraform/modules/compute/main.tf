@@ -45,3 +45,13 @@ resource "aws_instance" "app" {
     Project = var.project_name
   }
 }
+
+resource "aws_eip" "main" {
+  instance = aws_instance.app.id
+  domain   = "vpc"
+
+  tags = {
+    Name    = "${var.project_name}-eip"
+    Project = var.project_name
+  }
+}
