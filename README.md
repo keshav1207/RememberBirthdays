@@ -33,13 +33,13 @@ RememberBirthdays is a full-stack web application that helps users track and man
 | Language | Java 21 |
 | Framework | Spring Boot 3.5 |
 | Security | Spring Security, OAuth2 Resource Server, Keycloak |
-| Persistence | Spring Data JPA, PostgreSQL |
+| Persistence | Spring Data JPA, PostgreSQL (AWS RDS) |
 | Email | SendGrid Java SDK |
 | Containerisation | Docker, Docker Compose |
 | Registry | AWS ECR |
 | Compute | AWS EC2 |
 | Infrastructure | Terraform |
-| Monitoring | Spring Actuator, Prometheus, Node Exporter |
+| Monitoring | Spring Actuator, Prometheus, Grafana, Node Exporter |
 | CI/CD | GitHub Actions |
 | Testing | JUnit, Spring Boot Test, H2 (in-memory) |
 
@@ -59,9 +59,13 @@ RememberBirthdays is a full-stack web application that helps users track and man
 
 ## Architecture
 
-![Architecture Diagram](images/Architectural%20Diagram%20-%20RememberBirthdays.png)
+![Architecture Diagram](images/Architectural%20Diagram%20-%20RememberBirthdays%20v2.jpg)
 
-The backend runs as a Docker container on EC2, pulled from ECR on each deployment. PostgreSQL is provisioned via Terraform. CloudFront sits in front of the backend as a CDN. Keycloak runs separately on EC2 for authentication.
+- **Three CloudFront distributions** — one serving the React frontend from S3, one proxying the Spring Boot API, one proxying Keycloak
+- **VPC** with a public subnet (EC2, t3.micro) and a private subnet (RDS)
+- **EC2** runs all containers via Docker Compose: Spring Boot, Keycloak, Prometheus, Grafana, Node Exporter
+- **RDS PostgreSQL** (managed, private subnet) with two databases: `app_db` for the backend and `keycloak_db` for Keycloak
+- All deployments pull from **AWS ECR** and are orchestrated by GitHub Actions
 
 ---
 
@@ -194,7 +198,7 @@ All AWS infrastructure is defined in the `terraform/` directory and organised in
 - **networking** — VPC, subnets, internet gateway, route tables
 - **security** — security groups, IAM roles and policies
 - **compute** — EC2 instances for the backend and Keycloak
-- **database** — PostgreSQL
+- **database** — RDS PostgreSQL (private subnet, two databases: `app_db` and `keycloak_db`)
 - **cdn** — CloudFront distribution in front of the backend
 - **storage** — S3 buckets
 
@@ -211,7 +215,12 @@ terraform apply
 
 ## Monitoring
 
-The backend exposes metrics via Spring Actuator at `/actuator/prometheus`. Prometheus scrapes these every 15 seconds alongside Node Exporter host metrics, giving visibility into both application-level and system-level health.
+The full observability stack runs as Docker containers alongside the backend:
+
+- **Spring Actuator** — exposes application metrics at `/actuator/prometheus`
+- **Prometheus** — scrapes metrics every 15 seconds from both the Spring Boot app and Node Exporter
+- **Node Exporter** — collects host-level metrics (CPU, memory, disk) from the EC2 instance
+- **Grafana** — dashboards for visualising all collected metrics, available at port `3000`
 
 ---
 
