@@ -129,3 +129,15 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
+  # -------------------
+  # NODE EXPORTER
+  # -------------------
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - app-network
+    restart: unless-stopped
