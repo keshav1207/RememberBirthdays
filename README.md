@@ -1,59 +1,130 @@
-# RememberBirthdays
+# RememberBirthdays – Backend
 
-> A fullstack Spring Boot application to help users remember and manage birthdays, featuring secure authentication, email reminders, and a modern frontend. Built to showcase strong backend engineering, security, and DevOps skills.
+> Java 21 + Spring Boot 3.5 REST API for RememberBirthdays, with Keycloak authentication, automated birthday email reminders via SendGrid, and full AWS deployment managed with Terraform.
+
+---
 
 ## Table of Contents
 
-- [Features](#features)
-- [Tech Stack](#TechStack)
-- [Architecture](#architecture)
-- [API Overview](#api-overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Local Development](#local-development)
-  - [Running Tests](#running-tests)
-- [Project Structure](#project-structure)
-- [Why This Project Stands Out](#why-this-project-stands-out)
-- [Email Sending and Deployment](#email-sending-and-deployment)
-- [Author](#author)
+1. [Project Overview](#project-overview)
+2. [Tech Stack](#tech-stack)
+3. [Features](#features)
+4. [Architecture](#architecture)
+5. [Project Structure](#project-structure)
+6. [API Overview](#api-overview)
+7. [Getting Started](#getting-started)
+8. [CI/CD](#cicd)
+9. [Infrastructure (Terraform)](#infrastructure-terraform)
+10. [Monitoring](#monitoring)
+11. [Author](#author)
+
+---
+
+## Project Overview
+
+RememberBirthdays is a full-stack web application that helps users track and manage birthdays with automated email reminders. This repository contains the backend — a Spring Boot REST API secured with Keycloak (OAuth2 / JWT), backed by PostgreSQL, containerised with Docker, and deployed to AWS EC2 via ECR.
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Language | Java 21 |
+| Framework | Spring Boot 3.5 |
+| Security | Spring Security, OAuth2 Resource Server, Keycloak |
+| Persistence | Spring Data JPA, PostgreSQL |
+| Email | SendGrid Java SDK |
+| Containerisation | Docker, Docker Compose |
+| Registry | AWS ECR |
+| Compute | AWS EC2 |
+| Infrastructure | Terraform |
+| Monitoring | Spring Actuator, Prometheus, Node Exporter |
+| CI/CD | GitHub Actions |
+| Testing | JUnit, Spring Boot Test, H2 (in-memory) |
+
+---
 
 ## Features
 
-- **User Authentication & Authorization:**
-  - Integrated with Keycloak for OAuth2-based authentication and role-based access control (Admin/User).
-- **Birthday Management:**
-  - Add, update, and delete birthdays for people you want to remember.
-  - Each user manages their own list; admins can view all users and birthdays.
-- **Automated Email Reminders:**
-  - Sends daily email reminders for birthdays using SendGrid API.
-- **RESTful API:**
-  - Well-structured endpoints for user and birthday management.
-- **Dockerized & Cloud-Ready:**
-  - Includes Dockerfile and docker-compose for easy local development and deployment.
-- **PostgreSQL Database:**
-  - Uses PostgreSQL for robust, production-grade data storage.
+- OAuth2 JWT authentication via Keycloak with role-based access (Admin / User)
+- Full CRUD for birthday management — each user manages their own list
+- Admin endpoints to view all users and birthdays across the system
+- Automated daily email reminders using the SendGrid API
+- Dockerised for consistent local development and production deployment
+- Infrastructure fully provisioned with Terraform (networking, compute, database, CDN, security)
+- Metrics exposed via Spring Actuator and scraped by Prometheus
+
+---
 
 ## Architecture
 
 ![Architecture Diagram](images/Architectural%20Diagram%20-%20RememberBirthdays.png)
 
-### Backend & DevOps Tech Stack
+The backend runs as a Docker container on EC2, pulled from ECR on each deployment. PostgreSQL is provisioned via Terraform. CloudFront sits in front of the backend as a CDN. Keycloak runs separately on EC2 for authentication.
 
-- **Backend:** Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security, Keycloak, PostgreSQL, Docker
-- **DevOps:** Docker, Docker Compose
+---
+
+## Project Structure
+
+```
+src/main/java/com/example/RememberBirthdays/
+├── Config/         # Security, OAuth2, and Keycloak configuration
+├── Controller/     # REST API controllers
+├── DTO/            # Data Transfer Objects
+├── Model/          # JPA entities (User, Person)
+├── Repository/     # Spring Data JPA repositories
+├── Service/        # Business logic, email scheduling, Keycloak admin
+└── Utils/          # Security utilities
+
+terraform/
+├── modules/
+│   ├── cdn/        # CloudFront distribution
+│   ├── compute/    # EC2 instances
+│   ├── database/   # RDS / PostgreSQL
+│   ├── networking/ # VPC, subnets, routing
+│   ├── security/   # Security groups, IAM
+│   └── storage/    # S3 buckets
+├── main.tf
+├── variables.tf
+├── outputs.tf
+└── providers.tf
+
+.github/workflows/
+├── backend-ci.yml  # Run tests on push / PR
+└── backend-cd.yml  # Build, push to ECR, deploy to EC2
+```
+
+---
 
 ## API Overview
 
-- `POST /api/user` — Register a new user
-- `GET /api/user/{userId}` — Get user details
-- `PUT /api/user/{userId}` — Update user profile
-- `DELETE /api/user/{userId}` — Delete user
-- `POST /api/people` — Add a birthday (authenticated)
-- `GET /api/people` — List your birthdays
-- `PUT /api/people/{id}` — Update a birthday
-- `DELETE /api/people/{id}` — Delete a birthday
-- `GET /api/admin/allUsers` — List all users (admin)
-- `GET /api/admin/allBirthdays` — List all birthdays (admin)
+### User
+
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/user` | Register a new user | Public |
+| `GET` | `/api/user/{userId}` | Get user details | Authenticated |
+| `PUT` | `/api/user/{userId}` | Update user profile | Authenticated |
+| `DELETE` | `/api/user/{userId}` | Delete user | Authenticated |
+
+### Birthdays
+
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/api/people` | Add a birthday | Authenticated |
+| `GET` | `/api/people` | List your birthdays | Authenticated |
+| `PUT` | `/api/people/{id}` | Update a birthday | Authenticated |
+| `DELETE` | `/api/people/{id}` | Delete a birthday | Authenticated |
+
+### Admin
+
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/api/admin/allUsers` | List all users | Admin |
+| `GET` | `/api/admin/allBirthdays` | List all birthdays | Admin |
+
+---
 
 ## Getting Started
 
@@ -65,79 +136,85 @@
 
 ### Local Development
 
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/keshav1207/RememberBirthdays.git
-   cd RememberBirthdays
-   ```
-2. **Configure environment variables:**
-   - Copy `.env.example` to `.env` and fill in values for PostgreSQL and Keycloak.
-   - **Email:**
-     - Sign up for [SendGrid](https://sendgrid.com/), create an API key, and add these to your environment:
-       - `SENDGRID_API_KEY=your_sendgrid_api_key`
-       - `SENDGRID_FROM_EMAIL=your_verified_sender@email.com`
-     - On Railway, add these in the environment variables section.
-     - You must verify your sender email in SendGrid before sending.
-3. **Start services:**
-   ```sh
-   docker-compose up --build
-   ```
-   - This will start PostgreSQL, Keycloak, and the backend API.
-4. **Access Keycloak:**
-   - Visit [http://localhost:8080](http://localhost:8080) to manage users/roles.
-5. **API runs at:** [http://localhost:8081](http://localhost:8081)
+1. Clone the repository:
+
+```bash
+git clone https://github.com/keshav1207/RememberBirthdays.git
+cd RememberBirthdays
+```
+
+2. Configure environment variables — copy `.env.example` to `.env` and fill in values for PostgreSQL, Keycloak, and SendGrid:
+
+```
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_FROM_EMAIL=your_verified_sender@email.com
+```
+
+> You must verify your sender email in SendGrid before it will send.
+
+3. Start all services (PostgreSQL, Keycloak, backend):
+
+```bash
+docker compose -f docker-compose-local.yml up --build
+```
+
+4. The API runs at `http://localhost:8081` and Keycloak at `http://localhost:8080`.
 
 ### Running Tests
 
-```sh
+```bash
 ./mvnw test
 ```
 
-## Project Structure
+Tests use an H2 in-memory database — no external services required.
 
-- `src/main/java/com/example/RememberBirthdays/`
-  - `Controller/` — REST API endpoints
-  - `Service/` — Business logic, email, Keycloak integration
-  - `Model/` — JPA entities (User, Person)
-  - `Repository/` — Spring Data JPA repositories
-  - `Config/` — Security and Keycloak configuration
-  - `Utils/` — Security utilities
-- `docker-compose.yml` — Local dev stack
-- `Dockerfile` — Multi-stage backend build
-- `pom.xml` — Maven dependencies
+---
 
-## Why This Project Stands Out
+## CI/CD
 
-- **Modern Java & Spring Boot best practices**
-- **Secure OAuth2 authentication with Keycloak**
-- **Automated, real-world email reminders**
-- **Clean, maintainable code with layered architecture**
-- **Production-ready Docker setup**
-- **Full CRUD and admin features**
+Two GitHub Actions workflows handle automated testing and deployment.
 
-## Email Sending and Deployment
+**CI** (`backend-ci.yml`) — runs on every push and pull request to `main`:
+- Sets up Java 21 (Temurin)
+- Runs the full test suite with `./mvnw test`
 
-This project includes **automated birthday email reminders**.
+**CD** (`backend-cd.yml`) — runs on push to `main` only:
+- Runs tests (must pass before deploy)
+- Builds and pushes a Docker image to AWS ECR
+- SSHs into the EC2 instance, pulls the new image, and restarts the stack with `docker compose up -d`
 
-> **Note:** Outbound SMTP is blocked on Railway. Email reminders are sent using a transactional email API (e.g., SendGrid) via HTTPS.
+Required GitHub secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `ECR_REGISTRY`, `ECR_REPOSITORY`, `EC2_HOST`, `EC2_USERNAME`, `EC2_SSH_KEY`.
 
-### Important Limitations
+---
 
-- The deployed version on Railway uses a free tier of the SendGrid email service.
-- Once the free trial or quota expires, the deployed app may **no longer send email reminders**.
-- All other features (adding birthdays, user authentication, etc.) will continue to work.
+## Infrastructure (Terraform)
 
-### How to Test Email Reminders
+All AWS infrastructure is defined in the `terraform/` directory and organised into modules:
 
-You can fully test the email functionality by:
+- **networking** — VPC, subnets, internet gateway, route tables
+- **security** — security groups, IAM roles and policies
+- **compute** — EC2 instances for the backend and Keycloak
+- **database** — PostgreSQL
+- **cdn** — CloudFront distribution in front of the backend
+- **storage** — S3 buckets
 
-1. **Running the backend locally** with your own email service configuration.
-2. **Signing up for a free transactional email API key** (no paid subscription required) and configuring it in your environment variables.
+To provision from scratch:
 
-This ensures the app demonstrates backend email integration, even if the deployed version temporarily stops sending reminders due to quota limits.
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+---
+
+## Monitoring
+
+The backend exposes metrics via Spring Actuator at `/actuator/prometheus`. Prometheus scrapes these every 15 seconds alongside Node Exporter host metrics, giving visibility into both application-level and system-level health.
+
+---
 
 ## Author
 
-- Keshav Callychurn [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" width="20" alt="LinkedIn"/>](https://www.linkedin.com/in/keshav0799)
-
----
+Keshav Callychurn [<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" width="20" alt="LinkedIn"/>](https://www.linkedin.com/in/keshav0799)
